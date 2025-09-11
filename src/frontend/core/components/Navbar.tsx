@@ -41,7 +41,6 @@ const Navbar = () => {
             </Button>
             <Button
               className="bg-purple-600 hover:bg-purple-700"
-              asChild
               onClick={() => setIsSignupOpen(true)}
             >
               Get Started
