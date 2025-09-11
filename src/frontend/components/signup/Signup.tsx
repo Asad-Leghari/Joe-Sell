@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import {
   Dialog,
@@ -13,29 +12,31 @@ import { Button } from "@/frontend/core/components/ui/button";
 import { Input } from "@/frontend/core/components/ui/input";
 import { Label } from "@/frontend/core/components/ui/label";
 import { Separator } from "@/frontend/core/components/ui/separator";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import useAuthStore from "@/frontend/stores/authStore/auth";
 import { useRouter } from "next/navigation";
 
-interface SignInModalProps {
+interface SignUpModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSignIn: () => void;
+  onSignUp: () => void;
 }
 
-export function SignInModal({ isOpen, onClose, onSignIn }: SignInModalProps) {
+export function SignUpModal({ isOpen, onClose, onSignUp }: SignUpModalProps) {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const { loginUser, loading, error, user } = useAuthStore();
+
+  const { registerUser, loading, error } = useAuthStore();
   const router = useRouter();
 
-  const handleEmailSignIn = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await loginUser(email, password);
+    await registerUser(email, username, password);
 
-    if (success) {
+    if (!error) {
       onClose();
       router.push("/newdashboard");
     }
@@ -61,20 +62,33 @@ export function SignInModal({ isOpen, onClose, onSignIn }: SignInModalProps) {
             </span>
           </div>
           <DialogTitle className="text-center text-lg sm:text-2xl">
-            Welcome back!
+            Create your account
           </DialogTitle>
         </DialogHeader>
 
-        {/* 🚨 Error message display */}
-        {error && (
-          <div className="bg-red-100 text-red-700 px-3 py-2 rounded text-sm sm:text-base text-center mb-3">
-            {error}
-          </div>
-        )}
-
         <div className="space-y-4">
-          {/* Email Sign In Form */}
-          <form onSubmit={handleEmailSignIn} className="space-y-4">
+          {/* Sign Up Form */}
+          <form onSubmit={handleRegister} className="space-y-4">
+            {/* Username */}
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-sm sm:text-base">
+                Username
+              </Label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="Enter your username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="pl-10 text-sm sm:text-base"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm sm:text-base">
                 Email
@@ -93,6 +107,7 @@ export function SignInModal({ isOpen, onClose, onSignIn }: SignInModalProps) {
               </div>
             </div>
 
+            {/* Password */}
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm sm:text-base">
                 Password
@@ -122,19 +137,21 @@ export function SignInModal({ isOpen, onClose, onSignIn }: SignInModalProps) {
               </div>
             </div>
 
+            {/* Submit */}
             <Button
               type="submit"
+              disabled={loading}
               className="w-full bg-purple-600 hover:bg-purple-700 text-sm sm:text-base h-10 sm:h-12"
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? "Signing up..." : "Sign Up"}
             </Button>
-          </form>
 
-          <div className="text-center text-xs sm:text-sm text-gray-600">
-            <a href="#" className="text-purple-600 hover:underline">
-              Forgot your password?
-            </a>
-          </div>
+            {error && (
+              <p className="text-red-500 text-center text-xs sm:text-sm">
+                {error}
+              </p>
+            )}
+          </form>
 
           <div className="relative my-2">
             <div className="absolute inset-0 flex items-center">
@@ -145,7 +162,7 @@ export function SignInModal({ isOpen, onClose, onSignIn }: SignInModalProps) {
             </div>
           </div>
 
-          {/* Google Sign In */}
+          {/* Google Signup (optional) */}
           <Button
             variant="outline"
             className="w-full h-10 sm:h-12 text-gray-700 border-gray-300 hover:bg-gray-50 flex items-center justify-center text-sm sm:text-base"
@@ -172,9 +189,9 @@ export function SignInModal({ isOpen, onClose, onSignIn }: SignInModalProps) {
           </Button>
 
           <div className="text-center text-xs sm:text-sm text-gray-600">
-            Don't have an account?{" "}
+            Already have an account?{" "}
             <a href="#" className="text-purple-600 hover:underline font-medium">
-              Sign up
+              Sign in
             </a>
           </div>
         </div>

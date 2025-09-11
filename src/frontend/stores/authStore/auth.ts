@@ -13,7 +13,7 @@ interface AuthState {
   loading: boolean;
   error: string | null;
 
-  loginUser: (email: string, password: string) => Promise<void>;
+  loginUser: (email: string, password: string) => Promise<boolean>;
 
   registerUser: (
     email: string,
@@ -33,11 +33,15 @@ const useAuthStore = create<AuthState>((set) => ({
     set({ loading: true, error: null });
     try {
       const res = await axios.post("/api/auth/login", { email, password });
+
       set({ user: res.data.user, token: res.data.token, loading: false });
       localStorage.setItem("authToken", res.data.token);
       localStorage.setItem("authUser", JSON.stringify(res.data.user));
+
+      return true;
     } catch (err: any) {
       set({ error: err.response?.data?.error || err.message, loading: false });
+      return false;
     }
   },
 
