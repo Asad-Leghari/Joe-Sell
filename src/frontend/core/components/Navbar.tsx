@@ -59,7 +59,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Dropdown */}
+        {/* Mobile Dropdown*/}
         {isOpen && (
           <div className="md:hidden mt-4 flex flex-col gap-2">
             <Button variant="ghost" asChild>
