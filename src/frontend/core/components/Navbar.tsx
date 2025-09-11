@@ -82,7 +82,7 @@ const Navbar = () => {
           </div>
         )}
       </div>
-
+      {/* double routing causes issues so fallbacks to one time route  */}
       <SignInModal
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
